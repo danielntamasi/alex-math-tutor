@@ -206,6 +206,46 @@ img{max-width:100%}
 #loginForm .btns{margin-top:6px}
 .remember{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem}
 .remember input{width:18px;height:18px;margin:0}
+
+/* ---- responsive: phones keep one column; tablets get more room; computers put the card beside the keypad ---- */
+#setUI{display:flex;flex-direction:column;gap:12px}
+.stage{display:flex;flex-direction:column;gap:12px}
+@media (max-width:420px){.links .linkbtn{font-size:.88rem}}
+.kbhint{display:none;margin:10px 0 0;color:var(--muted);font-weight:700;font-size:.85rem;text-align:center}
+@media (hover:hover) and (pointer:fine){.kbhint{display:block}}
+@media (min-width:640px){
+  .wrap{max-width:720px;gap:14px}
+  h1{font-size:2rem}
+  .eq{font-size:4rem}
+  .pad button{font-size:2rem;padding:14px 0}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .settile .big{font-size:3.2rem}
+}
+@media (min-width:960px){
+  .wrap{max-width:1120px;gap:16px}
+  #setUI{display:grid;grid-template-columns:3fr 2fr;gap:12px 16px;align-items:center}
+  #setUI .life,#setUI .bar{grid-column:1/-1}
+  #setUI .row{grid-column:1/-1}
+  .stage{display:grid;grid-template-columns:3fr 2fr;gap:16px;align-items:stretch}
+  .stage #play[hidden]+#controls,.stage #controls[hidden]{grid-column:1/-1}
+  .card{height:100%;box-sizing:border-box;justify-content:center;min-height:340px;padding:28px}
+  .eq{font-size:clamp(4.5rem,6vw,6rem)}
+  .eq.ready{font-size:2rem}
+  .msg{font-size:1.2rem}
+  #controls{display:flex;flex-direction:column;justify-content:center}
+  .pad{gap:10px}
+  .pad button{font-size:2.2rem;padding:18px 0}
+  .pad .go,.pad .del{font-size:1.25rem}
+  .panel{padding:24px}
+  #report,#done{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;align-items:start}
+  #report>*,#done>*{min-width:0}
+  #report>.headline,#report>.btns,#report>form,#report>p,#report>.lock,
+  #done>.headline,#done>.btns{grid-column:1/-1}
+  #report>.sec:first-of-type{grid-column:1/-1}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+  .home .settile{padding:20px}
+  #report>#loginForm{max-width:520px;width:100%;justify-self:center;box-sizing:border-box}
+}
 </style>
 </head>
 <body>
@@ -238,6 +278,7 @@ img{max-width:100%}
   <div class="bar"><i id="prog"></i></div>
   </div>
 
+  <div class="stage">
   <section id="play">
     <div class="card" id="card">
       <div class="num" id="num"></div>
@@ -253,6 +294,8 @@ img{max-width:100%}
       <button>7</button><button>8</button><button>9</button>
       <button class="del" data-k="del" aria-label="Delete">⌫</button><button>0</button><button class="go" data-k="go" id="go">Start</button>
     </div>
+    <p class="kbhint">On a keyboard: type the answer, press Enter to check, Enter again for the next card.</p>
+  </div>
   </div>
 
   <section class="panel" id="done" hidden></section>
