@@ -243,13 +243,59 @@ img{max-width:100%}
   .panel{padding:24px}
   #report,#done{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;align-items:start}
   #report>*,#done>*{min-width:0}
-  #report>.headline,#report>.btns,#report>form,#report>p,#report>.lock,
+  #report>.full,#report>.headline,#report>.btns,#report>form,#report>p,#report>.lock,
   #done>.headline,#done>.btns{grid-column:1/-1}
-  #report>.sec:first-of-type{grid-column:1/-1}
   .tiles{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
   .home .settile{padding:20px}
   #report>#loginForm{max-width:520px;width:100%;justify-self:center;box-sizing:border-box}
 }
+
+/* ---- progress report (question-led layout) ---- */
+:root{--slowbar:#e0a038}
+#report{gap:16px}
+.rsec{display:flex;flex-direction:column;gap:10px;min-width:0}
+.rsec h2{font-size:1.1rem}
+.rsec .k{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rsec .note{margin:0;color:var(--muted);font-size:.88rem;line-height:1.4}
+.hero{font-size:2rem;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.hero small{font-size:1rem;color:var(--muted);font-weight:600}
+.hero.small{font-size:1.2rem}
+.xp{position:relative;height:22px;border:3px solid var(--line);background:repeating-linear-gradient(90deg,#3a3530 0 15px,#2f2a26 15px 17px)}
+.xp i{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(90deg,var(--grass) 0 15px,var(--grass2) 15px 17px)}
+.xp u{position:absolute;top:-6px;bottom:-6px;border-left:3px dashed var(--sun)}
+.xpscale{display:flex;justify-content:space-between;gap:6px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.mbar{display:flex;height:20px;border:3px solid var(--line);background:var(--key)}
+.mbar span{display:block;min-width:3px}
+.mleg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.85rem;font-weight:600}
+.mleg i{display:inline-block;width:11px;height:11px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
+.pick3{grid-template-columns:repeat(3,1fr)}
+.pick3 button{font-size:.85rem;line-height:1.25;padding:9px 4px}
+.pick3 .n{display:block;font-weight:600;opacity:.85}
+.rsec.next{background:var(--paper);border:3px solid var(--accent);padding:14px;box-shadow:inset 3px 3px 0 var(--hi),inset -3px -3px 0 rgba(0,0,0,.2)}
+.rsec.next .btn{font-size:1.1rem;padding:14px}
+.rhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.seg.mini{display:grid;grid-template-columns:1fr 1fr;padding:3px;gap:3px}
+.seg.mini button{font-size:.78rem;padding:5px 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chipstat{font-size:.85rem;background:var(--key);padding:4px 9px;border:2px solid var(--line)}
+.chart.rounds .col.practice i.ok{opacity:.55}
+.chart.rounds .col em{white-space:nowrap;font-size:.62rem}
+.lc .goalzone{fill:var(--good);opacity:.12}
+.days14{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;max-width:420px}
+.log .xpscale{max-width:420px}
+.days14 span{aspect-ratio:1;max-width:100%;background:var(--key);border:2px solid var(--line)}
+.days14 span.on{background:var(--grass)}
+.rsec .item .e{white-space:nowrap}
+.rsec .item .d{text-align:right}
+.item .bk{display:inline-block;min-width:1.2em;text-align:center;padding:0 .15em;border:2px solid currentColor;line-height:1.1}
+.item .d .few{font-weight:600;color:var(--muted);font-size:.8rem}
+.tagx{display:inline-block;margin-left:6px;font-size:.7rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;vertical-align:1px}
+.tagx.vs{background:var(--bad-bg);color:var(--bad)} .tagx.al{background:var(--slow-bg);color:var(--slow)}
+.item.slow .d{color:var(--slow)}
+.more-rows summary,.details>summary{cursor:pointer;font-weight:700;padding:6px 0;color:var(--ink)}
+.details{background:var(--paper);border:3px solid var(--line);padding:10px 14px}
+.details[open]{display:flex;flex-direction:column;gap:10px}
+.linkbtn.danger{color:var(--bad);align-self:flex-start;padding:4px 0}
 </style>
 </head>
 <body>
@@ -260,6 +306,7 @@ img{max-width:100%}
   </header>
   <div class="links">
     <button class="linkbtn" id="toHome">← All tables</button>
+    <button class="linkbtn" id="toCards" hidden>← Back to cards</button>
     <button class="linkbtn" id="restart">↺ Start over</button>
     <button class="linkbtn" id="toReport">Progress report</button>
     <button class="linkbtn" id="acct">Log in</button>
@@ -538,8 +585,8 @@ function focusDeck(){return categories().slice(0,focusLevel).flatMap(c=>c.items.
 let deckKey="B",mode="sprint",deck=[],i=0,typed="",armed=false,locked=false,t0=0,shownAt=0,timer=null,results=[],ended=false,adv=null;
 
 function setView(v){
-  $("home").hidden=v!=="home";$("setUI").hidden=v==="home";
-  $("toHome").hidden=v==="home";$("restart").hidden=v==="home";
+  $("home").hidden=v!=="home";$("setUI").hidden=v==="home"||v==="report";
+  $("toHome").hidden=v==="home";$("restart").hidden=v==="home"||v==="report";$("toCards").hidden=v!=="report";
   $("play").hidden=v!=="play";$("controls").hidden=v!=="play";
   $("done").hidden=v!=="done";$("report").hidden=v!=="report";
   $("reveal").hidden=v!=="play";$("toReport").hidden=v==="report"||v==="home";
@@ -623,7 +670,8 @@ async function finish(timedOut){
 }
 
 /* ---------- reports ---------- */
-function itemRow(cls,eq,detail){return `<div class="item ${cls}"><span class="e">${esc(pretty(eq,solve(eq)))}</span><span class="d">${esc(detail)}</span></div>`}
+/* a card row in solved form, with the number that was the blank boxed (8 × [2] = 16) */
+function itemRow(cls,eq,detail,extra=""){return `<div class="item ${cls}"><span class="e">${esc(pretty(eq,"@")).replace("@",`<span class="bk">${solve(eq)}</span>`)}</span><span class="d">${esc(detail)}${extra}</span></div>`}
 function renderDone(run){
   const wrong=results.filter(r=>!r.ok);
   const slow=results.filter(r=>r.ok).sort((a,b)=>b.ms-a.ms).filter(r=>r.ms>PACE2()).slice(0,6);
@@ -659,75 +707,139 @@ function dayLabel(k){
   if(k===today)return "Today";if(k===dayKey(y))return "Yesterday";
   const[Y,M,D]=k.split("-").map(Number);return new Date(Y,M-1,D).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
 }
+/* ---------- progress report: built around a parent's questions ----------
+   Where does he stand? · What to practise next? · Is he getting faster? · Is he improving? */
+const isSheetRound=r=>r.deck!=="focus"&&r.label!=="Missed + slow";
+function recentAvg(k=setKey){
+  const ms=data.answers.filter(a=>a.s===k&&a.ok&&a.ms).sort((x,y)=>x.at<y.at?-1:1).slice(-50).map(a=>a.ms);
+  if(ms.length>=10)return ms.reduce((a,b)=>a+b,0)/ms.length;
+  return totals(k).avg;
+}
+function bestSheet(dk){const s=myRuns().filter(r=>isSheetRound(r)&&(!dk||r.deck===dk)).map(r=>r.correct);return s.length?Math.max(...s):null}
+/* every card in the table, sorted into one bucket: wrong, slow, mastered or not tried */
+function mastery(){
+  const p2=PACE2(),byEq=Object.fromEntries(analyze().map(x=>[x.eq,x]));
+  const out={wrong:[],slow:[],mastered:[],untried:[]};
+  for(const eq of cardsFor("mix")){
+    const x=byEq[eq];
+    if(!x||!x.recentN)out.untried.push(eq);
+    else if(x.recentMiss>0)out.wrong.push(x);
+    else if(x.avg!==null&&x.avg>p2)out.slow.push(x);
+    else out.mastered.push(x);
+  }
+  return out;
+}
+const FOCUS_CHOICES=[{lvl:1,label:"Wrong ones"},{lvl:2,label:"Wrong + 5 slowest"},{lvl:4,label:"All below goal"}];
+function cardWord(n){return `${n} card${n===1?"":"s"}`}
+function listRows(items,rowFn,show=5){
+  if(!items.length)return "";
+  const head=items.slice(0,show).map(rowFn).join(""),rest=items.slice(show);
+  return `<div class="list">${head}</div>${rest.length?`<details class="more-rows"><summary>Show all ${items.length}</summary><div class="list">${rest.map(rowFn).join("")}</div></details>`:""}`;
+}
+const fewLast=(a,b)=>(a.recentN<3)-(b.recentN<3);
 function showReport(){
   if(!session){$("home").dataset.from="set";return showLogin(showReport)}
   abandon();clearInterval(timer);clearTimeout(adv);ended=true;
-  const N=goalN(),t=totals(),cats=categories();
-  const days=Object.entries(view().days).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);
-  const rounds=myRuns().filter(r=>r.answered).slice(0,14).reverse();
-  const bestAll=rounds.length?Math.max(...rounds.map(r=>r.correct)):0;
-  const last=rounds[rounds.length-1];
-  const scale=Math.max(N,...rounds.map(r=>r.answered));
-  const tag=r=>r.deck==="focus"||r.label==="Missed + slow"?"F":r.mode==="sprint"?"S":"P";
-  const chart=rounds.length?`<div class="chart rounds"><div class="goal" style="top:auto;bottom:calc(18px + (100% - 34px) * ${N/scale})"><span>All ${N}</span></div>${rounds.map(r=>
-    `<div class="col${r.partial?" part":""}${r.correct===bestAll?" best":""}" title="${esc(r.label)} · ${r.mode} · ${new Date(r.at).toLocaleDateString()} · ${r.correct} right of ${r.answered}${r.partial?" · left early":""}"><span class="stack"><b>${r.correct}</b><i class="no" style="height:${(r.answered-r.correct)/scale*100}%"></i><i class="ok" style="height:${Math.max(2,r.correct/scale*100)}%"></i></span><em>${tag(r)}</em></div>`).join("")}</div>
-    <p class="empty">Last ${rounds.length} rounds, oldest on the left. Number = right answers; the red top is wrong ones. S sprint · P practice · F focus; faded = left early.</p>`
-    :`<p class="empty">No rounds yet. Every round shows up here, finished or not.</p>`;
-  $("report").innerHTML=`<div class="headline"><div class="sub">${esc(SET().name)} · all-time</div><h2>Goal: all ${N} right in under 2:00</h2></div>
-  <div class="sec"><h2>Overall</h2>
-  <div class="stats4">
-    <div><b>${t.n}</b><small>Exercises done</small></div>
-    <div><b>${pct(t.ok,t.n)}</b><small>Right (${t.ok})</small></div>
-    <button type="button" class="tile" id="avgTile" aria-expanded="false"><b>${t.avg?secs(t.avg):"–"}</b><small>Avg per answer ▾</small></button>
-    <div><b>${t.today.n}</b><small>Done today</small></div>
-  </div>
-  <div id="avgPanel" class="avgpanel" hidden>
-    <div class="seg two" role="group" aria-label="Group average time by">
-      <button type="button" data-by="round">By round</button><button type="button" data-by="day">By day</button>
-    </div>
-    <div id="avgChart"></div>
-  </div>
-  <p class="empty">Avg counts correct answers. Tap it to see the trend. ${t.rounds} round${t.rounds===1?"":"s"} played, ${t.cards} of ${cardsFor("mix").length} different cards tried.</p></div>
-  ${days.length?`<div class="sec"><h2>By day</h2><div class="list">${days.map(([k,d])=>
-    `<div class="item day"><span class="e">${esc(dayLabel(k))}</span><span class="d">${d.n} done · ${pct(d.ok,d.n)} right · ${d.okN?"avg "+secs(d.okMs/d.okN):"avg –"}</span></div>`).join("")}</div></div>`:""}
-  <div class="sec"><h2>Rounds</h2>
-  <div class="stats3">
-    ${sheetKeys().slice(0,2).map(k=>`<div><b>${bestSprint(k)??"–"}</b><small>Most right · ${esc(k)}</small></div>`).join("")}
-    <div><b>${last?last.correct+"/"+last.answered:"–"}</b><small>Last round</small></div>
-  </div>
-  ${chart}</div>
-  <p class="empty">Tick the groups to practice. Ticking a group also ticks every group above it.</p>
-  ${cats.map((c,k)=>`<div class="sec"><label class="sec-h pick"><input type="checkbox" id="cat-${c.key}" data-lvl="${k}"><span class="pill ${c.pill}">${c.tag}</span><h2>${esc(c.title)}</h2><span class="count">${c.items.length}</span></label>
-    ${c.items.length?`<div class="list">${c.items.map(x=>itemRow(c.pill,x.eq,c.detail(x))).join("")}</div>`:`<p class="empty">${esc(c.empty)}</p>`}</div>`).join("")}
-  <div class="btns">
+  const N=goalN(),t=totals(),p2=PACE2(),p4=PACE4(),name=esc(session.username);
+  const m=mastery(),total=cardsFor("mix").length;
+  const best=bestSheet(),ra=recentAvg(),proj=ra?Math.min(N,Math.floor(SPRINT_MS/ra)):null;
+  if(![1,2,4].includes(focusLevel))focusLevel=focusLevel>=3?4:2;
+  const V=view(),dayKeys=Object.keys(V.days).sort();
+  const isUndated=k=>{const d=V.days[k];return d&&!d.okN&&(data.baseline[setKey]||{}).days&&(data.baseline[setKey].days||{})[k]};
+  const dated=dayKeys.filter(k=>!isUndated(k)&&V.days[k].n>0);
+  const lastDay=dated[dated.length-1];
+  const today=new Date();const weekAgo=new Date(today);weekAgo.setDate(today.getDate()-6);
+  const thisWeek=dated.filter(k=>k>=dayKey(weekAgo)).length;
+  const strip=[];for(let d=13;d>=0;d--){const x=new Date(today);x.setDate(today.getDate()-d);const k=dayKey(x);strip.push({k,n:(V.days[k]&&!isUndated(k))?V.days[k].n:0})}
+  const wrongRows=m.wrong.slice().sort((a,b)=>fewLast(a,b)||b.recentMiss-a.recentMiss||b.misses-a.misses);
+  const slowRows=m.slow.slice().sort((a,b)=>fewLast(a,b)||b.avg-a.avg);
+  const few=x=>x.recentN<3?` <span class="few">(few tries)</span>`:"";
+  const seg=(w,c)=>w?`<span style="width:${w/total*100}%;background:var(${c})"></span>`:"";
+  $("report").innerHTML=`
+  <section class="rsec stand">
+    <div class="k">Where ${name} stands · ${esc(SET().tab)}</div>
+    ${best!==null?`<div class="hero">${name}'s best: ${best} <small>of ${N}</small></div>`:`<div class="hero small">No full-sheet round yet</div>`}
+    <div class="xp" role="img" aria-label="Best ${best??0} of ${N}${proj?`, about ${proj} at current speed`:""}"><i style="width:${(best||0)/N*100}%"></i>${proj?`<u style="left:${proj/N*100}%"></u>`:""}</div>
+    <div class="xpscale"><span>0</span>${proj?`<span>◆ about ${proj} in 2:00 at current speed</span>`:"<span></span>"}<span>Goal ${N} in 2:00</span></div>
+    ${ra?`<p class="note">At his current speed (${secs(ra)} a card, last 50 answers) he'd finish about ${proj} of ${N} in 2 minutes.</p>`:""}
+  </section>
+  <section class="rsec mast">
+    <div class="k">Cards mastered</div>
+    <div class="hero">${m.mastered.length} <small>of ${total} cards</small></div>
+    <div class="mbar">${seg(m.mastered.length,"--good")}${seg(m.slow.length,"--slowbar")}${seg(m.wrong.length,"--bad")}${seg(m.untried.length,"--key")}</div>
+    <div class="mleg"><span><i style="background:var(--good)"></i>${m.mastered.length} mastered</span><span><i style="background:var(--slowbar)"></i>${m.slow.length} slow</span><span><i style="background:var(--bad)"></i>${m.wrong.length} getting wrong</span>${m.untried.length?`<span><i style="background:var(--key)"></i>${m.untried.length} not tried</span>`:""}</div>
+    <p class="note">Mastered = right on his recent tries, and faster than ${secs(p2)} on average.</p>
+  </section>
+  <section class="rsec next full">
+    <h2>What to practise next</h2>
+    <div class="seg pick3" role="group" aria-label="Which cards to practise">${FOCUS_CHOICES.map(c=>`<button type="button" data-lvl="${c.lvl}">${c.label} <span class="n" data-n="${c.lvl}"></span></button>`).join("")}</div>
     <button class="btn full" id="goFocus"></button>
-    <button class="btn alt" id="back">Back to cards</button>
-    <button class="btn alt danger" id="wipe">Reset progress</button>
-  </div>
-  <form class="lock" id="lock" hidden>
-    <label for="pin">Family code, to erase all of ${esc(session?session.username:"")}'s ${esc(SET().name)} progress</label>
-    <div class="lockrow"><input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
-    <button class="btn danger-fill" type="submit">Erase</button><button class="btn alt" type="button" id="pinCancel">Cancel</button></div>
-    <p class="lockmsg" id="pinMsg" aria-live="polite"></p>
-  </form>
-  <p class="empty" style="text-align:center">A card leaves these lists after it is answered right, at pace, for its last 5 tries. Other exercise sets keep their own progress.</p>`;
-  let avgBy=local.get("avgBy")==="day"?"day":"round";
-  const drawAvg=()=>{
-    document.querySelectorAll("[data-by]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.by===avgBy));
-    $("avgChart").innerHTML=avgChart(avgBy);
+  </section>
+  <section class="rsec">
+    <div class="rhead"><h2>Is ${name} getting faster?</h2>
+      <div class="seg mini" role="group" aria-label="Group speed by"><button type="button" data-by="day">By day</button><button type="button" data-by="round">By round</button></div></div>
+    <div id="avgChart"></div>
+  </section>
+  <section class="rsec">
+    <div class="rhead"><h2>Is ${name} improving?</h2>
+      <div class="seg mini" role="group" aria-label="Which rounds"><button type="button" data-rk="sheet">Sheet rounds</button><button type="button" data-rk="focus">Focus rounds</button></div></div>
+    <div class="chips">${sheetKeys().map(k=>`<span class="chipstat">Best · Sheet ${esc(k)}: <b>${bestSheet(k)??"–"}</b></span>`).join("")}</div>
+    <div id="roundsChart"></div>
+  </section>
+  <section class="rsec log full">
+    <h2>Practice log</h2>
+    <p>${lastDay?`Last practised: <b>${esc(dayLabel(lastDay))}</b> · ${cardWord(V.days[lastDay].n)} · ${thisWeek} day${thisWeek===1?"":"s"} this week`:"No dated practice yet."}</p>
+    <div class="days14" aria-label="Last 14 days">${strip.map(d=>`<span class="${d.n?"on":""}" title="${esc(dayLabel(d.k))}: ${d.n?cardWord(d.n):"no practice"}"></span>`).join("")}</div>
+    <div class="xpscale"><span>2 weeks ago</span><span>Today</span></div>
+  </section>
+  <section class="rsec">
+    <div class="sec-h"><span class="pill bad">Wrong</span><h2>Getting wrong</h2><span class="count">${m.wrong.length}</span></div>
+    ${m.wrong.length?listRows(wrongRows,x=>itemRow("bad",x.eq,`missed ${x.recentMiss} of last ${x.recentN}`,few(x))):`<p class="empty">Nothing missed in his recent tries.</p>`}
+  </section>
+  <section class="rsec">
+    <div class="sec-h"><span class="pill slow">Slow</span><h2>Correct but slow</h2><span class="count">${m.slow.length}</span></div>
+    ${m.slow.length?listRows(slowRows,x=>itemRow("slow",x.eq,`${secs(x.avg)} · goal ${secs(p2)}`,`<span class="tagx ${x.avg>p4?"vs":"al"}">${x.avg>p4?"very slow":"almost"}</span>`+few(x))):`<p class="empty">Every card he gets right is at goal pace.</p>`}
+  </section>
+  <details class="rsec full details">
+    <summary>Details &amp; totals</summary>
+    <div class="stats4">
+      <div><b>${t.n}</b><small>Exercises done</small></div>
+      <div><b>${pct(t.ok,t.n)}</b><small>Right (${t.ok})</small></div>
+      <div><b>${t.avg?secs(t.avg):"–"}</b><small>All-time avg</small></div>
+      <div><b>${t.today.n}</b><small>Done today</small></div>
+    </div>
+    <p class="note">${t.rounds} round${t.rounds===1?"":"s"} played, ${t.cards} of ${total} different cards tried. Averages count correct answers only.</p>
+    ${dayKeys.length?`<div class="list">${dayKeys.slice().reverse().map(k=>{const d=V.days[k];
+      return `<div class="item day"><span class="e">${isUndated(k)?"Earlier (undated)":esc(dayLabel(k))}</span><span class="d">${d.n} done · ${pct(d.ok,d.n)} right · ${d.okN?"avg "+secs(d.okMs/d.okN):"avg –"}</span></div>`}).join("")}</div>`:""}
+    <button type="button" class="linkbtn danger" id="wipe">Reset ${esc(SET().tab)} progress…</button>
+    <form class="lock" id="lock" hidden>
+      <label for="pin">Family code, to erase all of ${name}'s ${esc(SET().name)} progress</label>
+      <div class="lockrow"><input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
+      <button class="btn danger-fill" type="submit">Erase</button><button class="btn alt" type="button" id="pinCancel">Cancel</button></div>
+      <p class="lockmsg" id="pinMsg" aria-live="polite"></p>
+    </form>
+  </details>`;
+  /* practice picker */
+  const lvlCount=l=>categories().slice(0,l).reduce((a,c)=>a+c.items.length,0);
+  const syncPick=()=>{
+    document.querySelectorAll(".pick3 [data-lvl]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.lvl===focusLevel));
+    document.querySelectorAll(".pick3 .n").forEach(s=>s.textContent=`(${lvlCount(+s.dataset.n)})`);
+    const n=focusDeck().length;$("goFocus").textContent=n?`Practice ${cardWord(n)} ▶`:"Nothing to practise here";$("goFocus").disabled=!n;
   };
-  $("avgTile").onclick=()=>{const open=$("avgPanel").hidden;$("avgPanel").hidden=!open;$("avgTile").setAttribute("aria-expanded",open);if(open)drawAvg()};
-  document.querySelectorAll("[data-by]").forEach(b=>b.onclick=()=>{avgBy=b.dataset.by;local.set("avgBy",avgBy);drawAvg()});
-  const syncPicks=()=>{
-    document.querySelectorAll("[data-lvl]").forEach(cb=>cb.checked=+cb.dataset.lvl<focusLevel);
-    const n=focusDeck().length;$("goFocus").textContent=n?`Practice ${n} card${n===1?"":"s"}`:"No cards in the ticked groups";$("goFocus").disabled=!n;
-  };
-  document.querySelectorAll("[data-lvl]").forEach(cb=>cb.onchange=()=>{
-    const k=+cb.dataset.lvl;focusLevel=cb.checked?k+1:k;local.set("focusLevel",String(focusLevel));syncPicks();pressed();
-  });
-  syncPicks();
+  document.querySelectorAll(".pick3 [data-lvl]").forEach(b=>b.onclick=()=>{focusLevel=+b.dataset.lvl;local.set("focusLevel",String(focusLevel));syncPick();pressed()});
+  syncPick();
   $("goFocus").onclick=()=>{if(!focusDeck().length)return;deckKey="focus";mode="practice";start(focusDeck())};
-  $("back").onclick=()=>pick(deckKey==="focus"&&!focusDeck().length?sheetKeys()[0]:deckKey);
+  /* speed chart */
+  let avgBy=local.get("avgBy2")==="round"?"round":"day";
+  const drawAvg=()=>{document.querySelectorAll("[data-by]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.by===avgBy));$("avgChart").innerHTML=avgChart(avgBy)};
+  document.querySelectorAll("[data-by]").forEach(b=>b.onclick=()=>{avgBy=b.dataset.by;local.set("avgBy2",avgBy);drawAvg()});
+  drawAvg();
+  /* rounds chart */
+  let rk="sheet";
+  const drawRounds=()=>{document.querySelectorAll("[data-rk]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.rk===rk));$("roundsChart").innerHTML=roundsChart(rk)};
+  document.querySelectorAll("[data-rk]").forEach(b=>b.onclick=()=>{rk=b.dataset.rk;drawRounds()});
+  drawRounds();
+  /* reset */
   $("wipe").onclick=()=>{$("lock").hidden=false;$("pin").value="";$("pinMsg").textContent="";$("pin").focus()};
   $("pinCancel").onclick=()=>{$("lock").hidden=true};
   $("lock").onsubmit=async e=>{
@@ -735,35 +847,50 @@ function showReport(){
     try{await store.resetSet($("pin").value)}catch(x){$("pinMsg").textContent=/wrong family code/.test(x.message)?"Wrong family code. Nothing was erased.":"Couldn't reach the server. Nothing was erased.";$("pin").value="";$("pin").focus();return}
     showReport();pressed();renderLife();
   };
-  setView("report");pressed();
+  setView("report");pressed();window.scrollTo(0,0);
 }
-/* average time per correct answer over time, drawn as an SVG line with the 4-min and 2-min pace lines */
+/* right answers per round; sheet rounds (finished) by default, focus rounds on request */
+function roundsChart(kind){
+  const N=goalN();
+  const list=myRuns().filter(r=>r.answered&&(kind==="sheet"?isSheetRound(r)&&!r.partial:!isSheetRound(r))).slice(0,14).reverse();
+  if(!list.length)return `<p class="empty">${kind==="sheet"?"No finished sheet rounds yet. Finish a whole sheet (practice or sprint) to start this chart.":"No focus rounds yet."}</p>`;
+  const scale=kind==="sheet"?N:Math.max(...list.map(r=>r.answered));
+  const top=Math.max(...list.map(r=>r.correct));
+  const dlab=r=>new Date(r.at).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  return `<div class="chart rounds">${kind==="sheet"?`<div class="goal" style="top:auto;bottom:calc(18px + (100% - 34px) * 1)"><span>Goal ${N}</span></div>`:""}${list.map(r=>
+    `<div class="col${r.mode==="sprint"?" sprint":" practice"}${r.correct===top?" best":""}" title="${esc(r.label)} · ${r.mode} · ${dlab(r)} · ${r.correct} right of ${r.answered}"><span class="stack"><b>${r.correct}</b><i class="ok" style="height:${Math.max(2,r.correct/scale*100)}%"></i></span><em>${esc(dlab(r))}</em></div>`).join("")}</div>
+  <p class="empty">${kind==="sheet"?`Right answers in each finished sheet round, oldest on the left. Solid = 2-min sprint, faded = practice. Gold top = his best.`:`Right answers in each focus round (short rounds of weak cards).`}</p>`;
+}
+/* seconds per correct answer over time, with "OK pace" and "goal pace" lines; skips tiny samples */
 function avgChart(by){
-  let pts;
+  const MIN=10;let pts,skipped=0;
   if(by==="day"){
-    pts=Object.entries(view().days).filter(([,d])=>d.okN).sort((a,b)=>a[0].localeCompare(b[0])).slice(-14)
-      .map(([k,d])=>({v:d.okMs/d.okN,lab:dayLabel(k).replace(/^(\w+), /,""),tip:`${dayLabel(k)} · ${d.okN} correct`}));
+    const all=Object.entries(view().days).filter(([,d])=>d.okN).sort((a,b)=>a[0].localeCompare(b[0]));
+    skipped=all.filter(([,d])=>d.okN<MIN).length;
+    pts=all.filter(([,d])=>d.okN>=MIN).slice(-14).map(([k,d])=>({v:d.okMs/d.okN,lab:new Date(k+"T12:00").toLocaleDateString(undefined,{month:"short",day:"numeric"}),tip:`${dayLabel(k)} · ${d.okN} correct`}));
   }else{
-    pts=myRuns().filter(r=>r.avgMs).slice(0,20).reverse()
-      .map((r,k)=>({v:r.avgMs,lab:String(k+1),tip:`${r.label} · ${new Date(r.at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})} · ${r.correct} correct`}));
+    const all=myRuns().filter(r=>r.avgMs).reverse();
+    skipped=all.filter(r=>r.correct<MIN).length;
+    pts=all.filter(r=>r.correct>=MIN).slice(-20).map((r,k)=>({v:r.avgMs,lab:new Date(r.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}),tip:`${r.label} · ${r.correct} correct`}));
   }
-  if(!pts.length)return `<p class="empty">No timed ${by==="day"?"days":"rounds"} yet. Times are graphed from Nov 2 on; earlier answers were saved without dates.</p>`;
+  const skipNote=skipped?` ${skipped} ${by==="day"?"day":"round"}${skipped===1?"":"s"} with fewer than ${MIN} correct answers left out.`:"";
+  if(!pts.length)return `<p class="empty">Not enough timed practice yet. A ${by==="day"?"day":"round"} shows up once it has at least ${MIN} correct answers. Speed tracking starts Nov 2; earlier answers had no dates.${skipNote}</p>`;
   const W=340,H=180,L=34,R=8,T=12,B=26,p2=PACE2(),p4=PACE4();
-  const top=Math.max(p4*1.15,...pts.map(p=>p.v))*1.05;
-  const yMax=Math.ceil(top/1000)*1000;
+  const yMax=Math.ceil(Math.max(p4*1.15,...pts.map(p=>p.v))*1.05/1000)*1000;
   const x=k=>pts.length===1?L+(W-L-R)/2:L+k*(W-L-R)/(pts.length-1);
   const y=v=>T+(1-v/yMax)*(H-T-B);
   const ticks=[];for(let s=0;s<=yMax/1000;s+=yMax>8000?2:1)ticks.push(s*1000);
-  const every=Math.ceil(pts.length/8);
-  return `<svg class="lc" viewBox="0 0 ${W} ${H}" role="img" aria-label="Average seconds per correct answer ${by==="day"?"by day":"by round"}">
+  const every=Math.ceil(pts.length/6);
+  return `<svg class="lc" viewBox="0 0 ${W} ${H}" role="img" aria-label="Seconds per correct answer ${by==="day"?"by day":"by round"}">
+    <rect class="goalzone" x="${L}" y="${y(p2)}" width="${W-L-R}" height="${y(0)-y(p2)}"/>
     ${ticks.map(v=>`<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L-6}" y="${y(v)+4}" text-anchor="end">${v/1000}s</text>`).join("")}
-    <line class="ref4" x1="${L}" x2="${W-R}" y1="${y(p4)}" y2="${y(p4)}"/><text class="reft r4" x="${W-R}" y="${y(p4)-4}" text-anchor="end">4-min pace ${secs(p4)}</text>
-    <line class="ref2" x1="${L}" x2="${W-R}" y1="${y(p2)}" y2="${y(p2)}"/><text class="reft r2" x="${W-R}" y="${y(p2)-4}" text-anchor="end">2-min pace ${secs(p2)}</text>
+    <line class="ref4" x1="${L}" x2="${W-R}" y1="${y(p4)}" y2="${y(p4)}"/><text class="reft r4" x="${W-R}" y="${y(p4)-4}" text-anchor="end">OK pace (4 min) ${secs(p4)}</text>
+    <line class="ref2" x1="${L}" x2="${W-R}" y1="${y(p2)}" y2="${y(p2)}"/><text class="reft r2" x="${W-R}" y="${y(p2)-4}" text-anchor="end">Goal pace (2 min) ${secs(p2)}</text>
     ${pts.length>1?`<polyline class="ln" points="${pts.map((p,k)=>x(k)+","+y(p.v)).join(" ")}"/>`:""}
     ${pts.map((p,k)=>`<circle class="dot${k===pts.length-1?" last":""}" cx="${x(k)}" cy="${y(p.v)}" r="${k===pts.length-1?5:3.5}"><title>${esc(p.tip)} · ${secs(p.v)}</title></circle>`).join("")}
     ${pts.map((p,k)=>k%every===0||k===pts.length-1?`<text class="ax" x="${x(k)}" y="${H-8}" text-anchor="middle">${esc(p.lab)}</text>`:"").join("")}
   </svg>
-  <p class="empty">${by==="day"?"Each point is one day":"Each point is one round, numbered oldest to newest"}. Latest: <b>${secs(pts[pts.length-1].v)}</b>. Lower is faster; below the green line is 2-minute pace.</p>`;
+  <p class="empty">Seconds per correct answer. Lower is faster; the green zone is goal pace. Latest: <b>${secs(pts[pts.length-1].v)}</b>.${skipNote}</p>`;
 }
 function noteSaved(){renderStatus()}
 
@@ -793,6 +920,7 @@ document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.datase
 $("pad").addEventListener("click",e=>{const b=e.target.closest("button");if(b)press(b.dataset.k||b.textContent)});
 $("reveal").onclick=reveal;
 $("restart").onclick=()=>pick(deckKey);
+$("toCards").onclick=()=>pick(deckKey==="focus"&&!focusDeck().length?sheetKeys()[0]:deckKey);
 $("toReport").onclick=()=>{if(loaded)showReport()};
 $("acct").onclick=()=>{if(session){logoutLocal();showHome()}else{$("home").dataset.from=$("home").hidden?"set":"home";showLogin(()=>$("home").dataset.from==="home"?showHome():pick(deckKey))}};
 $("shuffle").onchange=()=>{local.set("shuf",$("shuffle").checked?"1":"");pick(deckKey)};
