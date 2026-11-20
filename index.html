@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="t-neutral">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -7,8 +7,8 @@
 <link rel="icon" href="favicon-32.png?v=2" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#5ea131">
-<title>Alex's Awesome Math Tutor</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Lexend:wght@500;600;700&display=swap">
+<title>Family Math Practice</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Fredoka:wght@600;700&family=Lexend:wght@500;600;700&display=swap">
 <style>
 /* Layout: one centered column — deck tabs, mode switch, card, phone-style keypad; reports replace the card */
 :root{
@@ -296,12 +296,101 @@ img{max-width:100%}
 .details{background:var(--paper);border:3px solid var(--line);padding:10px 14px}
 .details[open]{display:flex;flex-direction:column;gap:10px}
 .linkbtn.danger{color:var(--bad);align-self:flex-start;padding:4px 0}
+
+/* ================= profile themes =================
+   t-alex    : the block world above (default styles)
+   t-neutral : signed out — calm, plain, no game styling
+   t-heidi   : sparkly pop-star stage — lavender, pink, gold, friendship-bracelet beads */
+html.t-neutral{
+  --bg:#eef2f7; --paper:#ffffff; --ink:#1d2733; --muted:#5b6878; --line:#cfd8e3; --hi:#ffffff;
+  --accent:#2f6fd6; --accent-ink:#fff; --sun:#f0a400; --key:#e8eef6;
+  --grass:#2f6fd6; --grass2:#5b8fe6; --dirt:#8aa4c8; --dirt2:#6f8db8; --slowbar:#e0a038;
+  --display:"Lexend",system-ui,sans-serif; color-scheme:light}
+html.t-heidi{
+  --bg:#f6ecff; --paper:#fffafd; --ink:#3b1f4a; --muted:#7a5a8a; --line:#d9b8ea; --hi:#ffffff;
+  --accent:#c2357a; --accent-ink:#fff; --sun:#e2a400; --key:#f6e1f1;
+  --good:#1d8a6a; --good-bg:#d6f3ea; --bad:#c0392b; --bad-bg:#fbe0dd; --slow:#9a5b0c; --slow-bg:#fbecd2;
+  --grass:#ee7fba; --grass2:#b88ce6; --dirt:#9a63c9; --dirt2:#7c4bab; --slowbar:#f0b04a;
+  --display:"Fredoka","Lexend",system-ui,sans-serif; color-scheme:light}
+@media (prefers-color-scheme: dark){
+  html.t-neutral:not([data-theme="light"]){
+    --bg:#121821; --paper:#1b2430; --ink:#e8eef6; --muted:#9aa9bb; --line:#2c3949; --hi:#1b2430;
+    --accent:#6ea2f0; --accent-ink:#0b1626; --key:#243041; --grass:#6ea2f0; --grass2:#4f86de; --dirt:#4a5f7d; --dirt2:#3b4e69; color-scheme:dark}
+  html.t-heidi:not([data-theme="light"]){
+    --bg:#1e1530; --paper:#2a1f3d; --ink:#fbeefc; --muted:#cdb4dc; --line:#4f3a6b; --hi:#2a1f3d;
+    --accent:#ff7ab8; --accent-ink:#2a0f22; --sun:#ffd166; --key:#3a2b52;
+    --good:#5fd6ad; --good-bg:#173a31; --bad:#ff8a80; --bad-bg:#47211f; --slow:#f5b860; --slow-bg:#40301a;
+    --grass:#ff7ab8; --grass2:#b48cff; --dirt:#8e5cc8; --dirt2:#6b42a0; color-scheme:dark}}
+html.t-neutral[data-theme="dark"]{
+  --bg:#121821; --paper:#1b2430; --ink:#e8eef6; --muted:#9aa9bb; --line:#2c3949; --hi:#1b2430;
+  --accent:#6ea2f0; --accent-ink:#0b1626; --key:#243041; --grass:#6ea2f0; --grass2:#4f86de; --dirt:#4a5f7d; --dirt2:#3b4e69; color-scheme:dark}
+html.t-heidi[data-theme="dark"]{
+  --bg:#1e1530; --paper:#2a1f3d; --ink:#fbeefc; --muted:#cdb4dc; --line:#4f3a6b; --hi:#2a1f3d;
+  --accent:#ff7ab8; --accent-ink:#2a0f22; --sun:#ffd166; --key:#3a2b52;
+  --good:#5fd6ad; --good-bg:#173a31; --bad:#ff8a80; --bad-bg:#47211f; --slow:#f5b860; --slow-bg:#40301a;
+  --grass:#ff7ab8; --grass2:#b48cff; --dirt:#8e5cc8; --dirt2:#6b42a0; color-scheme:dark}
+
+/* shared: drop the block bevels outside Alex's world */
+html:not(.t-alex) :is(.card,.panel,.seg,.list,.stats3 div,.lock,.pad button,.btn,.life,.stats4 div,.stats4 .tile,.settile,.rsec.next,.details,.chipstat,.field,.seg button[aria-pressed="true"],.pad button:active,.settile:active){box-shadow:none!important}
+html:not(.t-alex) h1{text-shadow:none;letter-spacing:0}
+html:not(.t-alex) .xp{background:var(--key)}
+html:not(.t-alex) .xp i{background:var(--grass)}
+html:not(.t-alex) .bar{background:var(--key)}
+html:not(.t-alex) .bar i{background:var(--grass)}
+html:not(.t-alex) .chart .col i,html:not(.t-alex) .chart.rounds .col i.ok{background:var(--grass)}
+html:not(.t-alex) .chart.rounds .col.best i.ok{background:var(--sun)}
+
+/* neutral */
+html.t-neutral header::after{height:1px;background:var(--line)}
+html.t-neutral :is(.card,.panel,.list,.lock,.life,.details,.settile,.rsec.next){border-width:1px!important;border-radius:14px!important}
+html.t-neutral :is(.seg,.stats4 div,.stats4 .tile,.chipstat,.field,.pad button,.btn,.pill,.lockrow input){border-width:1px!important;border-radius:10px!important}
+html.t-neutral .seg button{border-radius:8px!important}
+html.t-neutral .settile::before{display:none}
+html.t-neutral h1{font-weight:700}
+
+/* Heidi: sparkly stage */
+html.t-heidi body{background-color:var(--bg);background-image:
+  radial-gradient(circle at 12% 18%,rgba(255,255,255,.9) 0 1.5px,transparent 2.5px),
+  radial-gradient(circle at 78% 9%,rgba(255,215,102,.9) 0 2px,transparent 3px),
+  radial-gradient(circle at 42% 62%,rgba(255,255,255,.8) 0 1.2px,transparent 2px),
+  radial-gradient(circle at 88% 74%,rgba(238,127,186,.7) 0 2px,transparent 3px),
+  radial-gradient(circle at 25% 88%,rgba(184,140,230,.8) 0 1.6px,transparent 2.6px);
+  background-size:260px 260px,340px 340px,200px 200px,300px 300px,230px 230px;background-attachment:fixed}
+html.t-heidi h1{font-weight:700;color:var(--accent);font-size:1.9rem}
+html.t-heidi h1::after{content:" ✦";color:var(--sun)}
+/* friendship-bracelet beads under the title and on top of each tile */
+html.t-heidi header::after{height:12px;background:
+  radial-gradient(circle,#ee7fba 0 4.5px,transparent 5px) 0 50%/72px 12px repeat-x,
+  radial-gradient(circle,#b88ce6 0 4.5px,transparent 5px) 12px 50%/72px 12px repeat-x,
+  radial-gradient(circle,#ffd166 0 4.5px,transparent 5px) 24px 50%/72px 12px repeat-x,
+  radial-gradient(circle,#7cc6f2 0 4.5px,transparent 5px) 36px 50%/72px 12px repeat-x,
+  radial-gradient(circle,#ffffff 0 4.5px,#d9b8ea 5px,transparent 5.5px) 48px 50%/72px 12px repeat-x,
+  radial-gradient(circle,#f59ac0 0 4.5px,transparent 5px) 60px 50%/72px 12px repeat-x}
+html.t-heidi :is(.card,.panel,.list,.lock,.life,.details,.settile,.rsec.next){border-width:2px!important;border-radius:20px!important;box-shadow:0 6px 18px rgba(154,99,201,.18)!important}
+html.t-heidi :is(.seg,.stats4 div,.stats4 .tile,.chipstat,.field,.lockrow input){border-width:2px!important;border-radius:14px!important}
+html.t-heidi .seg button{border-radius:10px!important}
+html.t-heidi :is(.pad button,.btn){border-width:2px!important;border-radius:16px!important}
+html.t-heidi .pad button{background:var(--paper)}
+html.t-heidi .pad .go,html.t-heidi .btn:not(.alt){background:linear-gradient(135deg,var(--accent),#9a63c9);border-color:transparent;color:#fff}
+html.t-heidi :is(.pill,.tagx){border-radius:99px!important}
+html.t-heidi .settile::before{height:10px;background:
+  radial-gradient(circle,#ee7fba 0 4px,transparent 4.5px) 0 50%/60px 10px repeat-x,
+  radial-gradient(circle,#b88ce6 0 4px,transparent 4.5px) 12px 50%/60px 10px repeat-x,
+  radial-gradient(circle,#ffd166 0 4px,transparent 4.5px) 24px 50%/60px 10px repeat-x,
+  radial-gradient(circle,#7cc6f2 0 4px,transparent 4.5px) 36px 50%/60px 10px repeat-x,
+  radial-gradient(circle,#f59ac0 0 4px,transparent 4.5px) 48px 50%/60px 10px repeat-x;margin:0 0 6px}
+html.t-heidi .xp,html.t-heidi .bar{border-radius:99px;overflow:hidden}
+html.t-heidi .xp i,html.t-heidi .bar i{background:linear-gradient(90deg,#ee7fba,#b88ce6,#ffd166)}
+html.t-heidi .card.good .msg::after{content:" ✨"}
+html.t-heidi .settile .big{font-size:2.2rem;white-space:nowrap}
+html.t-heidi .days14 span{border-radius:50%}
+html.t-heidi .days14 span.on{background:radial-gradient(circle at 35% 35%,#fff 0 2px,var(--grass) 3px)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Alex's Awesome Math Tutor</h1>
+    <h1 id="appTitle">Family Math Practice</h1>
     <span class="sub" id="setSub"></span>
   </header>
   <div class="links">
@@ -322,7 +411,7 @@ img{max-width:100%}
   </div>
 
   <div class="row">
-    <label><input type="checkbox" id="shuffle"> Shuffle</label>
+    <label id="shuffleWrap"><input type="checkbox" id="shuffle"> Shuffle</label>
     <span id="tally">0 ✓ · 0 ✗</span>
     <span class="clock" id="clock">2:00</span>
   </div>
@@ -359,7 +448,15 @@ img{max-width:100%}
    Each set keeps its own stats, rounds, weak spots and reset.
    To add one: give it a key, a name, a short tab label, and its sheets (each sheet is a list of cards).
    Cards look like "2×?=10" or "?÷2=6"; × ÷ + − are understood. */
+/* Heidi: take-aways up to 20. Mostly a two-digit number minus a one-digit number (10–20 minus 1–9),
+   some one-digit minus one-digit. Never two-digit minus two-digit, never a zero or negative answer. */
+function subPool(){const o=[];for(let a=10;a<=20;a++)for(let b=1;b<=9;b++)o.push(`${a}−${b}=?`);
+  for(let a=2;a<=9;a++)for(let b=1;b<a;b++)o.push(`${a}−${b}=?`);return o}
+/* Exercise keys: a key with a dash belongs to that profile only ("heidi-…"); plain keys are the shared times tables.
+   The database enforces the same rule. */
 const SETS={
+  "heidi-sub20":{name:"Subtracting within 20",tab:"− to 20",source:"Like 14 − 6 and 8 − 3",round:20,
+    sheets:{R:subPool()},deckNames:{R:"Round of 20"}},
   two:{name:"× and ÷ by 2",tab:"2's",source:"Eureka Math² · Grade 3 Module 2",sheets:{
     B:["2×?=10","1×2=?","10÷2=?","2×2=?","6÷2=?","3×2=?","2×?=14","4÷2=?","14÷2=?","4×2=?","2×?=18","5×2=?","18÷2=?","6×2=?","2×?=2","8÷2=?","2×?=0","12÷2=?","2÷2=?","7×2=?","2×?=4","8×2=?","?×2=8","9×2=?","2×?=12","16÷2=?","?×2=16","10×2=?","2×?=20","20÷2=?","?÷2=2","2×?=6","8÷?=2","?÷2=6","16÷?=2","?÷2=10","6÷2=?","14÷2=?","18÷2=?","1×2=?","2÷2=?","4÷2=?","8÷2=?","12÷2=?"],
     C:["4÷2=?","3×2=?","2×2=?","1×2=?","6÷2=?","5×2=?","4×2=?","8÷2=?","6×2=?","10÷2=?","7×2=?","12÷2=?","8×2=?","14÷2=?","9×2=?","16÷2=?","18÷2=?","10×2=?","20÷2=?","1×2=?","2÷2=?","2×?=6","2×?=10","10÷2=?","6÷2=?","2×?=14","14÷2=?","2×?=18","18÷2=?","2×?=2","2×?=0","2÷2=?","2×?=4","6÷2=?","?×2=8","2×?=12","?×2=16","2×?=20","?÷2=2","8÷?=2","?÷2=6","16÷?=2","?÷2=10","12÷2=?"]
@@ -397,14 +494,30 @@ function solve(s){
 const pretty=(s,fill="__")=>s.replace("="," = ").replace(/([×÷+−])/," $1 ").replace("?",fill);
 
 let setKey=SETS[local.get("set")]?local.get("set"):Object.keys(SETS)[0];
+/* which exercises the logged-in profile may use (mirrors the database rule) */
+const canUse=k=>!!session&&(k.includes("-")?k.startsWith(session.username.toLowerCase()+"-"):session.shared!==false);
+const mySets=()=>Object.keys(SETS).filter(canUse);
+function ensureSet(){const a=mySets();if(a.length&&!a.includes(setKey)){setKey=a[0];local.set("set",setKey)}}
+/* look and wording per profile; signed out is neutral */
+const THEMES={alex:{cls:"t-alex",title:"Alex's Awesome Math Tutor",his:"his",he:"he",pick:"Pick a times table"},
+  heidi:{cls:"t-heidi",title:"Heidi's Sparkle Math",his:"her",he:"she",pick:"Pick what to practise"}};
+function theme(){const u=session?session.username.toLowerCase():"";return THEMES[u]||(session?{cls:"t-neutral",title:`${session.username}'s Math Practice`,his:"their",he:"they",pick:"Pick what to practise"}:{cls:"t-neutral",title:"Family Math Practice",his:"their",he:"they",pick:""})}
+function applyTheme(){const t=theme();document.documentElement.classList.remove("t-alex","t-heidi","t-neutral");document.documentElement.classList.add(t.cls);
+  document.title=t.title;const h=document.getElementById("appTitle");if(h)h.textContent=t.title}
 const SET=()=>SETS[setKey];
 const sheetKeys=()=>Object.keys(SET().sheets);
-const goalN=()=>Math.max(...Object.values(SET().sheets).map(a=>a.length));
+const goalN=()=>SET().round||Math.max(...Object.values(SET().sheets).map(a=>a.length));
 const PACE2=()=>SPRINT_MS/goalN(), PACE4=()=>2*SPRINT_MS/goalN();
-const deckName=k=>k==="mix"?"Mixed":k==="focus"?"Focus":"Sheet "+k;
+const deckName=k=>(SET().deckNames&&SET().deckNames[k])||(k==="mix"?"Mixed":k==="focus"?"Focus":"Sheet "+k);
+/* a generated round: 3 in 4 cards start from a two-digit number, no repeats */
+function sampleRound(){
+  const S=SET(),n=S.round,pool=S.sheets.R,big=shuffle(pool.filter(c=>/^\d\d/.test(c))),small=shuffle(pool.filter(c=>!/^\d\d/.test(c)));
+  const nb=Math.min(big.length,Math.round(n*.75));return shuffle([...big.slice(0,nb),...small.slice(0,n-nb)]);
+}
 function cardsFor(k){
   if(k==="mix")return [...new Set(Object.values(SET().sheets).flat())];
   if(k==="focus")return focusDeck();
+  if(SET().round)return sampleRound();
   return SET().sheets[k]||[];
 }
 
@@ -437,11 +550,11 @@ function loadProfile(){data=session?readJSON(ck("cache"),EMPTY()):EMPTY();outA=s
 async function login(user,pass){
   const res=await rpc("login",{p_user:user,p_pass:pass});
   if(!res||res.error)return res&&res.error||"Couldn't log in.";
-  session={token:res.token,username:res.username};local.set("session",JSON.stringify(session));
-  loadProfile();renderAccount();await sync(true);return null;
+  session={token:res.token,username:res.username,shared:res.shared!==false};local.set("session",JSON.stringify(session));
+  loadProfile();applyTheme();ensureSet();buildTabs();renderAccount();await sync(true);return null;
 }
 function logoutLocal(){
-  const t=session&&session.token;session=null;local.set("session","");loadProfile();renderAccount();renderStatus();renderLife();
+  const t=session&&session.token;session=null;local.set("session","");loadProfile();applyTheme();renderAccount();renderStatus();renderLife();
   if(t)fetch(`${SUPABASE_URL}/rest/v1/rpc/logout`,{method:"POST",headers:{"apikey":SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_token:t})}).catch(()=>{});
 }
 function renderAccount(){$("acct").textContent=session?`${session.username} · Log out`:"Log in"}
@@ -458,6 +571,7 @@ async function sync(full){
     while(outA.length){const batch=outA.slice(0,200);await rpc("add_answers",{p_rows:batch});outA=outA.slice(batch.length);saveCache()}
     for(const id of Object.keys(outR)){await rpc("save_round",{p_row:outR[id]});delete outR[id];saveCache()}
     const res=await rpc("get_all",{p_since:full?null:data.since});
+    if(res.shared!==undefined&&session.shared!==res.shared){session.shared=res.shared;local.set("session",JSON.stringify(session));ensureSet();buildTabs()}
     data.baseline=res.baseline||{};
     if(full||!data.since){data.answers=[];data.rounds=[];seen=new Set()}
     for(const a of res.answers||[])addAnswerLocal({...a,at:iso(a.at)});
@@ -471,7 +585,7 @@ async function sync(full){
 }
 function renderStatus(){
   const waiting=outA.length+Object.keys(outR).length;
-  $("saveNote").textContent=!session?"Playing as a guest · nothing is saved":online==="badkey"?""
+  $("saveNote").textContent=!session?"":online==="badkey"?""
     :online===false?`Offline${waiting?` · ${waiting} saved on this device, will sync when back online`:" · showing the last synced progress"}`
     :online===true?(waiting?"Syncing…":`Synced · ${session.username}'s progress is on every device`):"Connecting…";
 }
@@ -532,14 +646,14 @@ let owner=false,unlocked=true,guestRound=false;
 function setUnlocked(){}
 function showLogin(then,opts={}){
   abandon();clearInterval(timer);clearTimeout(adv);ended=true;
-  $("report").innerHTML=`<div class="headline"><div class="sub">${opts.guest?"Before you start":"Progress"}</div><h2>${opts.guest?"Log in to save your progress?":"Log in to see progress"}</h2></div>
+  $("report").innerHTML=`<div class="headline"><div class="sub">${opts.welcome?"Welcome":opts.guest?"Before you start":"Progress"}</div><h2>${opts.welcome?"Who's practising today?":opts.guest?"Log in to save your progress?":"Log in to see progress"}</h2></div>
   <form class="lock unlockform" id="loginForm">
     <label for="lgUser">Username</label>
-    <input id="lgUser" class="field" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(local.get("lastUser")||"")}">
+    <input id="lgUser" class="field" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" value="">
     <label for="lgPass">Password</label>
     <input id="lgPass" class="field" type="password" inputmode="numeric" autocomplete="current-password">
     <div class="btns"><button class="btn" type="submit">Log in</button>
-    ${opts.guest?`<button class="btn alt" type="button" id="lgGuest">Play without saving</button>`:`<button class="btn alt" type="button" id="lgBack">Back</button>`}</div>
+    ${opts.welcome?"":opts.guest?`<button class="btn alt" type="button" id="lgGuest">Play without saving</button>`:`<button class="btn alt" type="button" id="lgBack">Back</button>`}</div>
     <p class="lockmsg" id="lgMsg" aria-live="polite"></p>
   </form>`;
   setView("report");($("lgUser").value?$("lgPass"):$("lgUser")).focus();
@@ -596,10 +710,11 @@ function setView(v){
   $("reveal").hidden=v!=="play";$("toReport").hidden=v==="report"||v==="home";
 }
 function buildTabs(){
-  const dk=[...sheetKeys(),"mix","focus"];
+  const dk=SET().round?[...sheetKeys(),"focus"]:[...sheetKeys(),"mix","focus"];
   $("decks").style.gridTemplateColumns=`repeat(${dk.length},1fr)`;
   $("decks").innerHTML=dk.map(k=>`<button id="d-${k}" data-deck="${k}">${deckName(k)}</button>`).join("");
   $("setSub").textContent=`${SET().name} · ${SET().source}`;
+  $("shuffleWrap").hidden=!!SET().round;
 }
 function pressed(){
   document.querySelectorAll("[data-set]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.set===setKey));
@@ -644,8 +759,7 @@ function render(val){
 function press(k){
   if(ended||!deck.length)return;
   if(!armed){if(k==="go"&&loaded){
-    if(!session&&!guestRound){const dk=deckKey,lab=deck.label,list=deck.slice();
-      return showLogin(()=>{pick(dk==="focus"?sheetKeys()[0]:dk);begin()},{guest:true,onGuest:()=>{start(list,lab);guestRound=true;begin()}})}
+    if(!session||!canUse(setKey))return showHome();
     begin()}return}
   if(locked){if(k==="go")next();return}
   if(k==="del")typed=typed.slice(0,-1);
@@ -742,6 +856,7 @@ function listRows(items,rowFn,show=5){
 }
 const fewLast=(a,b)=>(a.recentN<3)-(b.recentN<3);
 function showReport(){
+  const P=theme();
   if(!session){$("home").dataset.from="set";return showLogin(showReport)}
   abandon();clearInterval(timer);clearTimeout(adv);ended=true;
   const N=goalN(),t=totals(),p2=PACE2(),p4=PACE4(),name=esc(session.username);
@@ -765,14 +880,14 @@ function showReport(){
     ${best!==null?`<div class="hero">${name}'s best: ${best} <small>of ${N}</small></div>`:`<div class="hero small">No full-sheet round yet</div>`}
     <div class="xp" role="img" aria-label="Best ${best??0} of ${N}${proj?`, about ${proj} at current speed`:""}"><i style="width:${(best||0)/N*100}%"></i>${proj?`<u style="left:${proj/N*100}%"></u>`:""}</div>
     <div class="xpscale"><span>0</span>${proj?`<span>◆ about ${proj} in 2:00 at current speed</span>`:"<span></span>"}<span>Goal ${N} in 2:00</span></div>
-    ${ra?`<p class="note">At his current speed (${secs(ra)} a card, last 50 answers) he'd finish about ${proj} of ${N} in 2 minutes.</p>`:""}
+    ${ra?`<p class="note">At ${P.his} current speed (${secs(ra)} a card, last 50 answers) ${P.he}'d finish about ${proj} of ${N} in 2 minutes.</p>`:""}
   </section>
   <section class="rsec mast">
     <div class="k">Cards mastered</div>
     <div class="hero">${m.mastered.length} <small>of ${total} cards</small></div>
     <div class="mbar">${seg(m.mastered.length,"--good")}${seg(m.slow.length,"--slowbar")}${seg(m.wrong.length,"--bad")}${seg(m.untried.length,"--key")}</div>
     <div class="mleg"><span><i style="background:var(--good)"></i>${m.mastered.length} mastered</span><span><i style="background:var(--slowbar)"></i>${m.slow.length} slow</span><span><i style="background:var(--bad)"></i>${m.wrong.length} getting wrong</span>${m.untried.length?`<span><i style="background:var(--key)"></i>${m.untried.length} not tried</span>`:""}</div>
-    <p class="note">Mastered = right on his recent tries, and faster than ${secs(p2)} on average.</p>
+    <p class="note">Mastered = right on ${P.his} recent tries, and faster than ${secs(p2)} on average.</p>
   </section>
   <section class="rsec next full">
     <h2>What to practise next</h2>
@@ -798,7 +913,7 @@ function showReport(){
   </section>
   <section class="rsec">
     <div class="sec-h"><span class="pill bad">Wrong</span><h2>Getting wrong</h2><span class="count">${m.wrong.length}</span></div>
-    ${m.wrong.length?listRows(wrongRows,x=>itemRow("bad",x.eq,`missed ${x.recentMiss} of last ${x.recentN}`,few(x))):`<p class="empty">Nothing missed in his recent tries.</p>`}
+    ${m.wrong.length?listRows(wrongRows,x=>itemRow("bad",x.eq,`missed ${x.recentMiss} of last ${x.recentN}`,few(x))):`<p class="empty">Nothing missed in ${P.his} recent tries.</p>`}
   </section>
   <section class="rsec">
     <div class="sec-h"><span class="pill slow">Slow</span><h2>Correct but slow</h2><span class="count">${m.slow.length}</span></div>
@@ -855,6 +970,7 @@ function showReport(){
 }
 /* right answers per round; sheet rounds (finished) by default, focus rounds on request */
 function roundsChart(kind){
+  const P=theme();
   const N=goalN();
   const list=myRuns().filter(r=>r.answered&&(kind==="sheet"?isSheetRound(r)&&!r.partial:!isSheetRound(r))).slice(0,14).reverse();
   if(!list.length)return `<p class="empty">${kind==="sheet"?"No finished sheet rounds yet. Finish a whole sheet (practice or sprint) to start this chart.":"No focus rounds yet."}</p>`;
@@ -863,7 +979,7 @@ function roundsChart(kind){
   const dlab=r=>new Date(r.at).toLocaleDateString(undefined,{month:"short",day:"numeric"});
   return `<div class="chart rounds">${kind==="sheet"?`<div class="goal" style="top:auto;bottom:calc(18px + (100% - 34px) * 1)"><span>Goal ${N}</span></div>`:""}${list.map(r=>
     `<div class="col${r.mode==="sprint"?" sprint":" practice"}${r.correct===top?" best":""}" title="${esc(r.label)} · ${r.mode} · ${dlab(r)} · ${r.correct} right of ${r.answered}"><span class="stack"><b>${r.correct}</b><i class="ok" style="height:${Math.max(2,r.correct/scale*100)}%"></i></span><em>${esc(dlab(r))}</em></div>`).join("")}</div>
-  <p class="empty">${kind==="sheet"?`Right answers in each finished sheet round, oldest on the left. Solid = 2-min sprint, faded = practice. Gold top = his best.`:`Right answers in each focus round (short rounds of weak cards).`}</p>`;
+  <p class="empty">${kind==="sheet"?`Right answers in each finished sheet round, oldest on the left. Solid = 2-min sprint, faded = practice. Gold top = ${P.his} best.`:`Right answers in each focus round (short rounds of weak cards).`}</p>`;
 }
 /* seconds per correct answer over time, with "OK pace" and "goal pace" lines; skips tiny samples */
 function avgChart(by){
@@ -908,16 +1024,20 @@ function pickSet(k){
 /* top level: one tile per times table, each with its own all-time stats */
 function showHome(){
   abandon();clearInterval(timer);clearTimeout(adv);ended=true;
-  $("setSub").textContent=session?`Hi ${session.username}! Pick a times table`:"Pick a times table";  $("home").innerHTML=`<div class="tiles">${Object.entries(SETS).map(([k,S])=>{
+  if(!session){$("setSub").textContent="";$("home").dataset.from="home";showLogin(()=>showHome(),{welcome:true});
+    ["toHome","toCards","restart","toReport","reveal","acct"].forEach(id=>$(id).hidden=true);return}
+  $("acct").hidden=false;
+  ensureSet();
+  $("setSub").textContent=`Hi ${session.username}! ${theme().pick}`;  $("home").innerHTML=`<div class="tiles">${mySets().map(k=>[k,SETS[k]]).map(([k,S])=>{
     const t=totals(k);
     return `<button type="button" class="settile${k===setKey?" last":""}" data-set="${k}">
       <span class="big">${esc(S.tab)}</span><span class="nm">${esc(S.name)}</span>
       <span class="st">${!loaded?"Loading…":!session?"Log in to see progress":t.n?`${t.n} done · ${pct(t.ok,t.n)} right<br>avg ${t.avg?secs(t.avg):"–"} · today ${t.today.n}`:"Not started yet"}</span>
     </button>`}).join("")}</div>
-  <p class="empty">Each table keeps its own progress, reports and weak spots.</p>`;
+  <p class="empty">Each one keeps its own progress, reports and weak spots.</p>`;
   setView("home");
 }
-$("home").addEventListener("click",e=>{const b=e.target.closest("[data-set]");if(b)pickSet(b.dataset.set)});
+$("home").addEventListener("click",e=>{const b=e.target.closest("[data-set]");if(b&&canUse(b.dataset.set))pickSet(b.dataset.set)});
 $("toHome").onclick=showHome;
 $("decks").addEventListener("click",e=>{const b=e.target.closest("[data-deck]");if(b&&!b.disabled)pick(b.dataset.deck)});
 document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;local.set("mode2",mode);pick(deckKey)});
@@ -926,7 +1046,7 @@ $("reveal").onclick=reveal;
 $("restart").onclick=()=>pick(deckKey);
 $("toCards").onclick=()=>pick(deckKey==="focus"&&!focusDeck().length?sheetKeys()[0]:deckKey);
 $("toReport").onclick=()=>{if(loaded)showReport()};
-$("acct").onclick=()=>{if(session){logoutLocal();showHome()}else{$("home").dataset.from=$("home").hidden?"set":"home";showLogin(()=>$("home").dataset.from==="home"?showHome():pick(deckKey))}};
+$("acct").onclick=()=>{if(session)logoutLocal();showHome()};
 $("shuffle").onchange=()=>{local.set("shuf",$("shuffle").checked?"1":"");pick(deckKey)};
 document.addEventListener("keydown",e=>{
   if($("controls").hidden)return;
@@ -937,7 +1057,7 @@ document.addEventListener("keydown",e=>{
 
 $("shuffle").checked=local.get("shuf")==="1";
 mode=local.get("mode2")==="sprint"?"sprint":"practice";
-buildTabs();
+applyTheme();ensureSet();buildTabs();
 showHome();
 renderAccount();renderStatus();renderLife();pressed();
 sync(true);
