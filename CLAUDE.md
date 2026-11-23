@@ -16,6 +16,11 @@ https://danielntamasi.github.io/alex-math-tutor/. Progress is stored in Supabase
 - Heidi's exercise is generated, not from a worksheet: `round: 20` draws 20 cards per round from `sheets.R`
   (3 in 4 start from a two-digit number). Only result blanks; answers are always 1 or more.
 
+- Heidi's sight words (`heidi-sight`, `kind:"words"`): decks Tri 1/2/3 from her school list, rounds of 10.
+  Two modes, tracked separately by card key: "With a grown-up" (`assist`, key = word; grown-up taps
+  Got it / Needed help / Not yet; needed help is stored as ok=false, ms=1) and "Self practice" (`self`, key = "~word";
+  the device speaks the word, she taps it among 3 lookalikes). Mastered = last 3 tries right. No speech recognition.
+
 ## Adding a times table (the usual request)
 The user sends photos/PDFs of Eureka Math² sprint sheets (usually Sheet B and Sheet C, 44 cards each).
 1. Read every card. Write each as `a×b=c` / `a÷b=c` with `?` for the blank, e.g. `4×?=20`, `?÷4=6`.

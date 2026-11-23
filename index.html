@@ -385,6 +385,41 @@ html.t-heidi .card.good .msg::after{content:" ✨"}
 html.t-heidi .settile .big{font-size:2.2rem;white-space:nowrap}
 html.t-heidi .days14 span{border-radius:50%}
 html.t-heidi .days14 span.on{background:radial-gradient(circle at 35% 35%,#fff 0 2px,var(--grass) 3px)}
+
+/* ---- sight words ---- */
+.eq.word{font-size:clamp(3.2rem,16vw,5.5rem);letter-spacing:.02em;font-weight:700}
+.eq.listen{display:flex;justify-content:center}
+.listenbtn{display:inline-flex;align-items:center;gap:10px;font:700 1.4rem var(--body);padding:14px 26px;border:3px solid var(--line);background:var(--key);color:var(--ink);cursor:pointer}
+.wordpad{display:flex;flex-direction:column;gap:10px}
+.wbtns3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.wchoices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wb{font:700 1.15rem var(--body);padding:16px 6px;border:3px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;touch-action:manipulation}
+.wchoices .wb{font-size:1.6rem;padding:18px 6px}
+.wb.ok{background:var(--good);color:#fff;border-color:transparent}
+.wb.help{background:var(--slowbar);color:#2b1a05;border-color:transparent}
+.wb.no{background:var(--key)}
+.wb.right{background:var(--good);color:#fff}
+.wb.wrong{background:var(--bad);color:#fff}
+.wb:focus-visible,.listenbtn:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.whint{margin:0;color:var(--muted);font-weight:600;text-align:center;font-size:.92rem}
+.wstart{font-size:1.2rem;padding:16px}
+.wchips{display:flex;flex-wrap:wrap;gap:8px}
+.wchip{font-weight:700;font-size:1.2rem;padding:6px 12px;background:var(--key);border:2px solid var(--line)}
+.wgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wcol{display:flex;flex-direction:column;gap:5px;min-width:0}
+.whead{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:center}
+.wcell{position:relative;font-weight:600;font-size:.95rem;padding:5px 8px;background:var(--key);border:2px solid var(--line);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wcell.learning{background:var(--slowbar);color:#2b1a05}
+.wcell.mastered{background:var(--good);color:#fff}
+.wcell .sd{position:absolute;right:5px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;border:2px solid transparent}
+.wcell .sd.learning{border-color:currentColor}
+.wcell .sd.mastered{background:currentColor;border-color:currentColor}
+.sdk{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;border:2px solid var(--ink);vertical-align:0}
+.sdk.mastered{background:var(--ink)}
+html.t-heidi :is(.wb,.listenbtn,.wchip,.wcell){border-radius:14px;border-width:2px}
+html.t-heidi .wcell{border-radius:10px}
+html.t-heidi .wb.ok{background:linear-gradient(135deg,#1d8a6a,#3aa37f)}
+@media (max-width:420px){.wbtns3 .wb{font-size:1rem;padding:14px 4px}.wcell{font-size:.85rem;padding:4px 6px}}
 </style>
 </head>
 <body>
@@ -434,6 +469,7 @@ html.t-heidi .days14 span.on{background:radial-gradient(circle at 35% 35%,#fff 0
       <button>7</button><button>8</button><button>9</button>
       <button class="del" data-k="del" aria-label="Delete">⌫</button><button>0</button><button class="go" data-k="go" id="go">Start</button>
     </div>
+    <div class="wordpad" id="wordpad" hidden></div>
     <p class="kbhint">On a keyboard: type the answer, press Enter to check, Enter again for the next card.</p>
   </div>
   </div>
@@ -455,6 +491,8 @@ function subPool(){const o=[];for(let a=10;a<=20;a++)for(let b=1;b<=9;b++)o.push
 /* Exercise keys: a key with a dash belongs to that profile only ("heidi-…"); plain keys are the shared times tables.
    The database enforces the same rule. */
 const SETS={
+  "heidi-sight":{kind:"words",name:"Sight words",tab:"abc",source:"Read them, or find the one you hear",
+    sheets:{T1:["was","one","does","have","be","so","old","only","along","away","move","even","find","kind","great","more","once","two","again","read","really","today"],T2:["were","there","very","also","some","would","could","should","over","says","between","many","out","about","our","always","because","before","every","know","myself","try"],T3:["friend","other","another","none","nothing","people","month","little","been","own","want","write","being","their","look","good","water","called","answer","change","large","learn"]},deckNames:{T1:"Tri 1",T2:"Tri 2",T3:"Tri 3"}},
   "heidi-sub20":{name:"Subtracting within 20",tab:"− to 20",source:"Like 14 − 6 and 8 − 3",round:20,
     sheets:{R:subPool()},deckNames:{R:"Round of 20"}},
   two:{name:"× and ÷ by 2",tab:"2's",source:"Eureka Math² · Grade 3 Module 2",sheets:{
@@ -500,7 +538,7 @@ const mySets=()=>Object.keys(SETS).filter(canUse);
 function ensureSet(){const a=mySets();if(a.length&&!a.includes(setKey)){setKey=a[0];local.set("set",setKey)}}
 /* look and wording per profile; signed out is neutral */
 const THEMES={alex:{cls:"t-alex",title:"Alex's Awesome Math Tutor",his:"his",he:"he",pick:"Pick a times table"},
-  heidi:{cls:"t-heidi",title:"Heidi's Sparkle Math",his:"her",he:"she",pick:"Pick what to practise"}};
+  heidi:{cls:"t-heidi",title:"Heidi's Sparkle Practice",his:"her",he:"she",pick:"Pick what to practise"}};
 function theme(){const u=session?session.username.toLowerCase():"";return THEMES[u]||(session?{cls:"t-neutral",title:`${session.username}'s Math Practice`,his:"their",he:"they",pick:"Pick what to practise"}:{cls:"t-neutral",title:"Family Math Practice",his:"their",he:"they",pick:""})}
 function applyTheme(){const t=theme();document.documentElement.classList.remove("t-alex","t-heidi","t-neutral");document.documentElement.classList.add(t.cls);
   document.title=t.title;const h=document.getElementById("appTitle");if(h)h.textContent=t.title}
@@ -516,9 +554,172 @@ function sampleRound(){
 }
 function cardsFor(k){
   if(k==="mix")return [...new Set(Object.values(SET().sheets).flat())];
-  if(k==="focus")return focusDeck();
+  if(k==="focus"&&!isWords())return focusDeck();
+  if(isWords())return wordDeck(k);
   if(SET().round)return sampleRound();
   return SET().sheets[k]||[];
+}
+
+/* ---------- sight words (Heidi) ----------
+   Two ways to practise, tracked separately:
+   • "With a grown-up" (mode assist): she reads the word aloud, the grown-up taps Got it / Needed help / Not yet.
+     This is the real progress check. Card key = the word ("was").
+   • "Self practice" (mode self): the device says the word, she taps it among lookalikes. Card key = "~was". */
+const isWords=()=>SET().kind==="words";
+const WORD_ROUND=10;
+const plainWord=c=>c.replace(/^~/,"");
+const allWords=()=>[...new Set(Object.values(SET().sheets).flat())];
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);for(let j=1;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+/* three lookalike choices: closest spelling first, same first letter preferred, a little randomness */
+function lookalikes(w){
+  return allWords().filter(x=>x!==w).map(x=>({x,s:lev(w,x)+(x[0]===w[0]?0:1.5)+Math.abs(x.length-w.length)*.3+Math.random()*.8}))
+    .sort((a,b)=>a.s-b.s).slice(0,3).map(o=>o.x);
+}
+/* word status from recent tries: mastered = last 3 right; learning = tried; new = not tried */
+function wordStatus(card){
+  const p=view().problems[card];if(!p||!p.tries)return {s:"new",p:null};
+  const rec=p.recent||[];const last3=rec.slice(-3);
+  return {s:last3.length>=3&&last3.every(r=>r.ok)?"mastered":"learning",p};
+}
+function shakyWords(){
+  const out=[];for(const w of allWords()){const a=wordStatus(w),b=wordStatus("~"+w);
+    const missed=x=>x.p&&(x.p.recent||[]).some(r=>!r.ok);
+    if(missed(a)||missed(b))out.push({w,miss:((a.p&&a.p.misses)||0)+((b.p&&b.p.misses)||0)})}
+  return out.sort((x,y)=>y.miss-x.miss).map(o=>o.w);
+}
+function wordDeck(k){
+  const base=k==="focus"?shakyWords():k==="mix"?allWords():(SET().sheets[k]||[]);
+  const words=k==="focus"?base.slice(0,WORD_ROUND):shuffle(base).slice(0,WORD_ROUND);
+  return shuffle(words).map(w=>mode==="self"?"~"+w:w);
+}
+let voice=null;
+function pickVoice(){try{const v=speechSynthesis.getVoices().filter(v=>/^en(-|_)US/i.test(v.lang));
+  voice=v.find(x=>/samantha|google us english|aria|jenny/i.test(x.name))||v[0]||null}catch(e){}}
+if(window.speechSynthesis){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function say(w){
+  if(!window.speechSynthesis)return false;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.lang="en-US";u.rate=.8;if(voice)u.voice=voice;speechSynthesis.speak(u);return true}catch(e){return false}
+}
+const SPEAKER=`<svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+let requeued=new Set();
+function showWord(){
+  const card=deck[i],w=plainWord(card);
+  $("reveal").hidden=true;
+  if(mode==="assist"){
+    $("eq").className="eq word";$("eq").textContent=w;
+    $("wordpad").innerHTML=`<div class="wbtns3"><button type="button" class="wb ok" data-w="ok">Got it</button><button type="button" class="wb help" data-w="help">Needed help</button><button type="button" class="wb no" data-w="no">Not yet</button></div>
+      <p class="whint">Grown-up: let ${esc(session?session.username:"")} read it out loud, then tap one.</p>`;
+  }else{
+    $("eq").className="eq word listen";
+    $("eq").innerHTML=`<button type="button" class="listenbtn" id="listen" aria-label="Hear the word again">${SPEAKER}<span>Listen</span></button>`;
+    const opts=shuffle([w,...lookalikes(w)]);
+    $("wordpad").innerHTML=`<p class="whint">Which word did you hear?</p><div class="wchoices">${opts.map(o=>`<button type="button" class="wb choice" data-c="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+    $("listen").onclick=()=>say(w);
+    if(!say(w))$("msg").textContent="This device can't read words out loud. Try “With a grown-up”.";
+  }
+}
+function gradeWord(kind,given){
+  if(locked)return;locked=true;
+  const card=deck[i],w=plainWord(card),ms=Date.now()-shownAt,ok=kind==="ok";
+  const r={eq:card,ok,ms:ok?ms:(kind==="help"?1:null),help:kind==="help",given};results.push(r);logAnswer(r);
+  /* a missed word comes back once later in the same round */
+  if(!ok&&!requeued.has(card)&&deck.length-i>1){requeued.add(card);deck.splice(Math.min(deck.length,i+3),0,card)}
+  if(mode==="self"){
+    document.querySelectorAll("#wordpad .choice").forEach(b=>{if(b.dataset.c===w)b.classList.add("right");else if(b.dataset.c===given)b.classList.add("wrong")});
+    if(!ok)say(w);
+  }
+  $("card").className="card "+(ok?"good":"bad");
+  $("msg").textContent=ok?(mode==="self"?"Yes! That's “"+w+"”":"Great reading!"):mode==="self"?`That one says “${w}”`:kind==="help"?"Nice try, we'll see it again":"We'll practise it again";
+  tick();adv=setTimeout(next,ok?700:1500);
+}
+$("wordpad").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.id==="wstart")return press("go");
+  if(!armed||ended)return;
+  if(b.dataset.w)gradeWord(b.dataset.w);
+  else if(b.dataset.c!==undefined)gradeWord(b.dataset.c===plainWord(deck[i])?"ok":"no",b.dataset.c);
+});
+function renderDoneWords(run){
+  const again=[...new Set(results.filter(r=>!r.ok).map(r=>plainWord(r.eq)))];
+  const firstTry=new Set();const seenW=new Set();for(const r of results){const w=plainWord(r.eq);if(!seenW.has(w)){seenW.add(w);if(r.ok)firstTry.add(w)}}
+  const total=seenW.size;
+  $("done").innerHTML=`<div class="headline"><div class="sub">${esc(run.label)} · ${mode==="assist"?"with a grown-up":"self practice"}</div>
+    <div class="big">${firstTry.size} / ${total}</div>
+    <div class="empty">${mode==="assist"?"words read on the first try":"words found on the first try"}</div></div>
+  <div class="sec"><h2>Practise again</h2>
+    ${again.length?`<div class="wchips">${again.map(w=>`<span class="wchip">${esc(w)}</span>`).join("")}</div>`:`<p class="empty">None. Every word was right.</p>`}</div>
+  <div class="btns">
+    ${again.length?`<button class="btn full" id="redo">Practise these ${again.length} again</button>`:""}
+    <button class="btn alt" id="again">Another round</button>
+    <button class="btn alt" id="openReport">Progress report</button>
+  </div>`;
+  if(again.length)$("redo").onclick=()=>start(shuffle(again).map(w=>mode==="self"?"~"+w:w),"Practise again");
+  $("again").onclick=()=>pick(deckKey);
+  $("openReport").onclick=showReport;
+}
+function showWordReport(){
+  abandon();clearInterval(timer);clearTimeout(adv);ended=true;
+  const P=theme(),name=esc(session.username),words=allWords(),V=view();
+  const st=Object.fromEntries(words.map(w=>[w,{a:wordStatus(w),s:wordStatus("~"+w)}]));
+  const cnt=k=>words.filter(w=>st[w].a.s===k).length;
+  const mastered=cnt("mastered"),learning=cnt("learning"),fresh=cnt("new"),selfM=words.filter(w=>st[w].s.s==="mastered").length;
+  const shaky=shakyWords(),t=totals();
+  const seg=(n,c)=>n?`<span style="width:${n/words.length*100}%;background:var(${c})"></span>`:"";
+  const dated=Object.keys(V.days).filter(k=>V.days[k].n>0).sort();const lastDay=dated[dated.length-1];
+  const today=new Date(),strip=[];for(let d=13;d>=0;d--){const x=new Date(today);x.setDate(today.getDate()-d);const k=dayKey(x);strip.push({k,n:V.days[k]?V.days[k].n:0})}
+  const tip=(w)=>{const a=st[w].a.p,s=st[w].s.p;return `${w} · with a grown-up: ${a?`${a.tries-a.misses} of ${a.tries} right`:"not tried"} · self practice: ${s?`${s.tries-s.misses} of ${s.tries} right`:"not tried"}`};
+  $("report").innerHTML=`
+  <section class="rsec stand">
+    <div class="k">Sight words · read with a grown-up</div>
+    <div class="hero">${mastered} <small>of ${words.length} words mastered</small></div>
+    <div class="mbar">${seg(mastered,"--good")}${seg(learning,"--slowbar")}${seg(fresh,"--key")}</div>
+    <div class="mleg"><span><i style="background:var(--good)"></i>${mastered} mastered</span><span><i style="background:var(--slowbar)"></i>${learning} learning</span><span><i style="background:var(--key)"></i>${fresh} not tried</span></div>
+    <p class="note">Mastered = read right the last 3 times with a grown-up. Self practice is tracked separately: ${selfM} word${selfM===1?"":"s"} found right 3 times in a row.</p>
+  </section>
+  <section class="rsec next">
+    <h2>What to practise next</h2>
+    ${shaky.length?`<p class="note">${shaky.length} shaky word${shaky.length===1?"":"s"}: ${shaky.slice(0,8).map(esc).join(", ")}${shaky.length>8?"…":""}</p>
+    <div class="btns"><button class="btn" id="shakyAssist">With a grown-up</button><button class="btn alt" id="shakySelf">Self practice</button></div>`
+    :`<p class="note">No shaky words yet. Pick a list to keep going.</p>`}
+  </section>
+  <section class="rsec full">
+    <h2>${name}'s word list</h2>
+    <div class="wgrid">${sheetKeys().map(k=>`<div class="wcol"><div class="whead">${esc(deckName(k))}</div>${SET().sheets[k].map(w=>
+      `<span class="wcell ${st[w].a.s}" title="${esc(tip(w))}">${esc(w)}<i class="sd ${st[w].s.s}" aria-hidden="true"></i></span>`).join("")}</div>`).join("")}</div>
+    <div class="mleg"><span><i style="background:var(--good)"></i>mastered with a grown-up</span><span><i style="background:var(--slowbar)"></i>learning</span><span><i style="background:var(--key)"></i>not tried</span><span><b class="sdk mastered"></b>found in self practice</span><span><b class="sdk learning"></b>tried in self practice</span></div>
+    <p class="note">Same layout as the paper sheet, so you can tick its boxes from here.</p>
+  </section>
+  <section class="rsec log full">
+    <h2>Practice log</h2>
+    <p>${lastDay?`Last practised: <b>${esc(dayLabel(lastDay))}</b> · ${V.days[lastDay].n} word${V.days[lastDay].n===1?"":"s"}`:"No practice yet."}</p>
+    <div class="days14" aria-label="Last 14 days">${strip.map(d=>`<span class="${d.n?"on":""}" title="${esc(dayLabel(d.k))}: ${d.n?d.n+" words":"no practice"}"></span>`).join("")}</div>
+    <div class="xpscale"><span>2 weeks ago</span><span>Today</span></div>
+  </section>
+  <details class="rsec full details">
+    <summary>Details &amp; totals</summary>
+    <div class="stats4">
+      <div><b>${t.n}</b><small>Words practised</small></div>
+      <div><b>${pct(t.ok,t.n)}</b><small>Right (${t.ok})</small></div>
+      <div><b>${t.rounds}</b><small>Rounds</small></div>
+      <div><b>${t.today.n}</b><small>Today</small></div>
+    </div>
+    <button type="button" class="linkbtn danger" id="wipe">Reset sight-word progress…</button>
+    <form class="lock" id="lock" hidden>
+      <label for="pin">Family code, to erase all of ${name}'s sight-word progress</label>
+      <div class="lockrow"><input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
+      <button class="btn danger-fill" type="submit">Erase</button><button class="btn alt" type="button" id="pinCancel">Cancel</button></div>
+      <p class="lockmsg" id="pinMsg" aria-live="polite"></p>
+    </form>
+  </details>`;
+  const go=m=>{mode=m;local.set("wmode",m);deckKey="focus";pressed();start(shakyWords().slice(0,WORD_ROUND).map(w=>m==="self"?"~"+w:w),"Shaky words")};
+  if($("shakyAssist")){$("shakyAssist").onclick=()=>go("assist");$("shakySelf").onclick=()=>go("self")}
+  $("wipe").onclick=()=>{$("lock").hidden=false;$("pin").value="";$("pinMsg").textContent="";$("pin").focus()};
+  $("pinCancel").onclick=()=>{$("lock").hidden=true};
+  $("lock").onsubmit=async e=>{e.preventDefault();
+    try{await store.resetSet($("pin").value)}catch(x){$("pinMsg").textContent=/wrong family code/.test(x.message)?"Wrong family code. Nothing was erased.":"Couldn't reach the server. Nothing was erased.";$("pin").value="";$("pin").focus();return}
+    showWordReport();pressed();renderLife()};
+  setView("report");pressed();window.scrollTo(0,0);
 }
 
 /* ---------- backend: Supabase. Each answer is one row; all stats are worked out from the rows ---------- */
@@ -611,7 +812,7 @@ const myRuns=(k=setKey)=>data.rounds.filter(r=>runSet(r)===k).sort((a,b)=>b.at.l
 let roundId=null;
 function logAnswer(r){
   if(!session)return;
-  const a={c:uid(),s:setKey,q:r.eq,ok:r.ok,ms:r.ok?r.ms:null,at:new Date().toISOString(),d:deviceId,r:roundId};
+  const a={c:uid(),s:setKey,q:r.eq,ok:r.ok,ms:r.ok?r.ms:(r.help?1:null),at:new Date().toISOString(),d:deviceId,r:roundId};
   addAnswerLocal(a);outA.push(a);dataVer++;saveCache();renderLife();sync();
 }
 function makeRun(timedOut,partial){
@@ -670,6 +871,8 @@ function renderLife(){
   if(!loaded)return;
   if(!session){$("life").innerHTML=`<b>${SET().tab}</b> · playing as a guest, nothing is saved <button type="button" class="linkbtn inline" id="lifeLogin">Log in</button>`;$("lifeLogin").onclick=()=>{$("home").dataset.from="set";showLogin(()=>pick(deckKey))};return}
   const t=totals();
+  if(isWords()){const m=allWords().filter(w=>wordStatus(w).s==="mastered").length;
+    $("life").innerHTML=t.n?`<b>Sight words</b>: <b>${m}</b> of ${allWords().length} mastered · ${t.n} tries · today <b>${t.today.n}</b>`:`<b>Sight words</b>: not started yet.`;return}
   $("life").innerHTML=t.n
     ?`<b>${SET().tab}</b> all-time: <b>${t.n}</b> done · <b>${pct(t.ok,t.n)}</b> right · avg <b>${t.avg?secs(t.avg):"–"}</b> · today <b>${t.today.n}</b>`
     :`<b>${SET().tab}</b>: no answers yet. Stats appear here after the first card.`;
@@ -697,7 +900,7 @@ function categories(){
   ];
 }
 let focusLevel=+(local.get("focusLevel")||2);
-function focusDeck(){return categories().slice(0,focusLevel).flatMap(c=>c.items.map(x=>x.eq))}
+function focusDeck(){if(isWords())return shakyWords();return categories().slice(0,focusLevel).flatMap(c=>c.items.map(x=>x.eq))}
 
 /* ---------- run state ---------- */
 let deckKey="B",mode="sprint",deck=[],i=0,typed="",armed=false,locked=false,t0=0,shownAt=0,timer=null,results=[],ended=false,adv=null;
@@ -710,11 +913,16 @@ function setView(v){
   $("reveal").hidden=v!=="play";$("toReport").hidden=v==="report"||v==="home";
 }
 function buildTabs(){
-  const dk=SET().round?[...sheetKeys(),"focus"]:[...sheetKeys(),"mix","focus"];
+  const dk=SET().round||isWords()?[...sheetKeys(),"focus"]:[...sheetKeys(),"mix","focus"];
   $("decks").style.gridTemplateColumns=`repeat(${dk.length},1fr)`;
   $("decks").innerHTML=dk.map(k=>`<button id="d-${k}" data-deck="${k}">${deckName(k)}</button>`).join("");
   $("setSub").textContent=`${SET().name} · ${SET().source}`;
-  $("shuffleWrap").hidden=!!SET().round;
+  $("shuffleWrap").hidden=!!SET().round||isWords();
+  const mp=$("m-practice"),ms=$("m-sprint");
+  if(isWords()){mp.dataset.mode="self";mp.textContent="Self practice";ms.dataset.mode="assist";ms.textContent="With a grown-up";
+    if(mode!=="self"&&mode!=="assist")mode=local.get("wmode")==="assist"?"assist":"self"}
+  else{mp.dataset.mode="practice";mp.textContent="Practice";ms.dataset.mode="sprint";ms.textContent="2-min Sprint";
+    if(mode!=="practice"&&mode!=="sprint")mode=local.get("mode2")==="sprint"?"sprint":"practice"}
 }
 function pressed(){
   document.querySelectorAll("[data-set]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.set===setKey));
@@ -729,9 +937,12 @@ function start(list,label){
   deck.label=label||deckName(deckKey);
   setView("play");pressed();
   $("card").className="card";
-  $("num").textContent=`${deck.label} · ${deck.length} cards · ${mode==="sprint"?"2-minute sprint":"practice"}`;
+  $("num").textContent=isWords()?`${deck.label} · ${deck.length} words · ${mode==="assist"?"with a grown-up":"self practice"}`:`${deck.label} · ${deck.length} cards · ${mode==="sprint"?"2-minute sprint":"practice"}`;
+  requeued=new Set();
+  $("pad").hidden=isWords();$("wordpad").hidden=!isWords();document.querySelector(".kbhint").hidden=isWords();
+  if(isWords())$("wordpad").innerHTML=`<button type="button" class="btn full wstart" id="wstart">Start</button>`;
   $("eq").className="eq ready";
-  $("eq").textContent=!deck.length?"No cards in this deck yet":loaded?"Press Start when ready":"Loading saved progress…";
+  $("eq").textContent=!deck.length?(isWords()?"No shaky words yet":"No cards in this deck yet"):loaded?"Press Start when ready":"Loading saved progress…";
   $("msg").textContent="";$("go").textContent="Start";$("prog").style.width="0%";
   tick();
 }
@@ -748,9 +959,11 @@ function tick(){
 function show(){
   typed="";locked=false;
   $("card").className="card";$("msg").textContent="";$("eq").className="eq";
-  $("num").textContent=`Card ${i+1} of ${deck.length}`;
+  $("num").textContent=`${isWords()?"Word":"Card"} ${i+1} of ${deck.length}`;
   $("prog").style.width=(i/deck.length*100)+"%";
-  $("go").textContent="Check";shownAt=Date.now();render();
+  shownAt=Date.now();
+  if(isWords())return showWord();
+  $("go").textContent="Check";render();
 }
 function render(val){
   const shown=val!==undefined?val:(typed||" ");
@@ -783,7 +996,7 @@ async function finish(timedOut){
   ended=true;clearInterval(timer);clearTimeout(adv);
   $("prog").style.width="100%";tick();
   const run=makeRun(timedOut,false);
-  renderDone(run);setView("done");pressed();
+  (isWords()?renderDoneWords:renderDone)(run);setView("done");pressed();
   if(results.length){await store.save(run);noteSaved();renderLife()}
 }
 
@@ -856,6 +1069,7 @@ function listRows(items,rowFn,show=5){
 }
 const fewLast=(a,b)=>(a.recentN<3)-(b.recentN<3);
 function showReport(){
+  if(session&&isWords())return showWordReport();
   const P=theme();
   if(!session){$("home").dataset.from="set";return showLogin(showReport)}
   abandon();clearInterval(timer);clearTimeout(adv);ended=true;
@@ -1040,7 +1254,7 @@ function showHome(){
 $("home").addEventListener("click",e=>{const b=e.target.closest("[data-set]");if(b&&canUse(b.dataset.set))pickSet(b.dataset.set)});
 $("toHome").onclick=showHome;
 $("decks").addEventListener("click",e=>{const b=e.target.closest("[data-deck]");if(b&&!b.disabled)pick(b.dataset.deck)});
-document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;local.set("mode2",mode);pick(deckKey)});
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;local.set(isWords()?"wmode":"mode2",mode);pick(deckKey)});
 $("pad").addEventListener("click",e=>{const b=e.target.closest("button");if(b)press(b.dataset.k||b.textContent)});
 $("reveal").onclick=reveal;
 $("restart").onclick=()=>pick(deckKey);
@@ -1050,6 +1264,7 @@ $("acct").onclick=()=>{if(session)logoutLocal();showHome()};
 $("shuffle").onchange=()=>{local.set("shuf",$("shuffle").checked?"1":"");pick(deckKey)};
 document.addEventListener("keydown",e=>{
   if($("controls").hidden)return;
+  if(isWords()){if(e.key==="Enter"&&!armed){e.preventDefault();press("go")}return}
   if(/^\d$/.test(e.key))press(e.key);
   else if(e.key==="Backspace")press("del");
   else if(e.key==="Enter"){e.preventDefault();press("go")}
