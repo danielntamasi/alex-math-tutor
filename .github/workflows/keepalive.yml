@@ -1,10 +1,14 @@
-# Keeps the free Supabase project from pausing (it pauses after ~7 days without activity).
-# Runs once a day and can also be started by hand from the Actions tab.
+# Keeps the free Supabase project from pausing (it pauses after ~7 days without enough activity).
+# Calls ping(), which reads and writes a real row, twice a day. Also runs whenever this file changes,
+# and can be started by hand from the Actions tab.
 name: Keep database awake
 
 on:
   schedule:
-    - cron: "17 15 * * *"   # every day at 15:17 UTC (7:17 / 8:17 am Pacific)
+    - cron: "17 15 * * *"   # 7:17 / 8:17 am Pacific
+    - cron: "47 3 * * *"    # 7:47 / 8:47 pm Pacific
+  push:
+    paths: [".github/workflows/keepalive.yml"]
   workflow_dispatch:
 
 jobs:
@@ -12,13 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase
+        env:
+          URL: https://zrdoyjuffrrcwanhldlb.supabase.co/rest/v1/rpc
+          KEY: sb_publishable_9PxC5FlytfWdJZfVQhY-1w_kofsYcP0
         run: |
-          # A login attempt for a profile that doesn't exist: harmless, but it runs a real database query.
-          code=$(curl -sS -o response.txt -w "%{http_code}" -X POST \
-            "https://zrdoyjuffrrcwanhldlb.supabase.co/rest/v1/rpc/login" \
-            -H "apikey: sb_publishable_9PxC5FlytfWdJZfVQhY-1w_kofsYcP0" \
-            -H "Content-Type: application/json" \
-            -d '{"p_user":"keepalive","p_pass":"x"}')
-          cat response.txt; echo
-          echo "HTTP $code"
+          call() { curl -sS -o response.txt -w "%{http_code}" -X POST "$URL/$1" \
+                     -H "apikey: $KEY" -H "Content-Type: application/json" -d "$2"; }
+          code=$(call ping '{}')
+          cat response.txt; echo; echo "ping: HTTP $code"
+          if [ "$code" != "200" ]; then
+            # ping() not installed yet: fall back to the old read-only check
+            code=$(call login '{"p_user":"keepalive","p_pass":"x"}')
+            cat response.txt; echo; echo "fallback: HTTP $code"
+          fi
           test "$code" = "200"

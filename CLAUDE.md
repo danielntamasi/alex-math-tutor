@@ -35,4 +35,4 @@ The user sends photos/PDFs of Eureka Math² sprint sheets (usually Sheet B and S
 - Never commit passwords or the family code. They live only in Supabase as bcrypt hashes.
 - The publishable key in `index.html` is meant to be public.
 - Look: Minecraft-style blocks; the pixel font is for the title only, numbers use the readable font.
-- `.github/workflows/keepalive.yml` pings Supabase daily so the free project doesn't pause.
+- `.github/workflows/keepalive.yml` calls `ping()` (reads + writes the `heartbeat` row) twice a day so the free project doesn't pause; a read-only ping was not enough.
